@@ -1,0 +1,24 @@
+sudo: require
+services:
+  - docker
+
+before__install:
+  # Dockerfile을 명시해주고 context는 해당 폴더내로 지정함.
+  - docker build -t wer2774/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  # -- --coverage로 test가 끝나면 종료되도록 함.
+  - docker run wer2774/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t wer2774/multi-client ./client
+  - docker build -t wer2774/multi-nginx ./nginx
+  - docker build -t wer2774/multi-server ./server
+  - docker build -t wer2774/multi-worker ./worker
+  # Log in to Dockerhub
+  - echo "$DOCKER_PW" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those image and push them to docker hub
+  - docker push wer2774/multi-client
+  - docker push wer2774/multi-nginx
+  - docker push wer2774/multi-server
+  - docker push wer2774/multi-worker
