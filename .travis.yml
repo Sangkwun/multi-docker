@@ -2,7 +2,7 @@ sudo: require
 services:
   - docker
 
-before__install:
+before_install:
   # Dockerfile을 명시해주고 context는 해당 폴더내로 지정함.
   - docker build -t wer2774/react-test -f ./client/Dockerfile.dev ./client
 
